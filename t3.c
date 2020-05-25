@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int COL = 50000 + 1; // Numero de colunas
+int COL = 50000 + 1; // Numero de colunas + 1 é pro espaço pra enviar a linha
 
 enum {
   REQUEST_TAG  = 0,
@@ -55,7 +55,6 @@ main(int argc, char** argv) {
       if (status.MPI_TAG == SUICIDE_TAG) break; // Se não tiver mais vetor para ordenar, finalizo
 
       // Processa
-
       bs(COL - 1, vetor_tarefa);
       //qsort (vetor_tarefa, COL - 1, sizeof(int), compare);
       
@@ -69,7 +68,7 @@ main(int argc, char** argv) {
     }
 
     double time = MPI_Wtime();
-    i = 0;
+    int linha = 0
     int deadProcess = 0;
 
     while(1) {
@@ -78,7 +77,7 @@ main(int argc, char** argv) {
 
       if (status.MPI_TAG == RESPONSE_TAG) { // Se for resposta do escravo com vetor ordenado, guarda o vetor
         for(j = 0; j < COL - 1; j++)  saco_de_tarefas[vetor_tarefa[COL-1]][j] = vetor_tarefa[j]; 
-      } else if (i >= proc_n * 2) { // Se for uma request mas acabou os vetores, manda suicide
+      } else if (linha >= proc_n * 2) { // Se for uma request mas acabou os vetores, manda suicide
         MPI_Send(&buffer, 1, MPI_INT, vetor_tarefa[0], SUICIDE_TAG, MPI_COMM_WORLD);
 
         deadProcess++;
@@ -90,12 +89,12 @@ main(int argc, char** argv) {
             }
           }*/
           //printf("cabo em : %f", MPI_Wtime() - time);
-          printf("nha: %1.2f\n", MPI_Wtime() - time);
+          printf("time: %1.2f\n", MPI_Wtime() - time);
           break;
         }
       } else { // Envia vetor
-        saco_de_tarefas[i][COL-1] = i; // Guarda o número da linha no último espaço reservado
-        MPI_Send(&saco_de_tarefas[i], COL, MPI_INT, vetor_tarefa[0], RESPONSE_TAG, MPI_COMM_WORLD);
+        saco_de_tarefas[linha][COL-1] = i; // Guarda o número da linha no último espaço reservado
+        MPI_Send(&saco_de_tarefas[linha], COL, MPI_INT, vetor_tarefa[0], RESPONSE_TAG, MPI_COMM_WORLD);
         i++;
       }
     }
