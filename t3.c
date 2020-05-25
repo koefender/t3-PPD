@@ -93,9 +93,9 @@ main(int argc, char** argv) {
           break;
         }
       } else { // Envia vetor
-        saco_de_tarefas[linha][COL-1] = i; // Guarda o número da linha no último espaço reservado
+        saco_de_tarefas[linha][COL-1] = linha; // Guarda o número da linha no último espaço reservado
         MPI_Send(&saco_de_tarefas[linha], COL, MPI_INT, vetor_tarefa[0], RESPONSE_TAG, MPI_COMM_WORLD);
-        i++;
+        linha++;
       }
     }
   }
