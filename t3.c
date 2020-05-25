@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int COL = 50000 + 1; // Numero de colunas + 1 é pro espaço pra enviar a linha
+int COL = 100000 + 1; // Numero de colunas + 1 é pro espaço pra enviar a linha
 
 enum {
   REQUEST_TAG  = 0,
@@ -55,8 +55,8 @@ main(int argc, char** argv) {
       if (status.MPI_TAG == SUICIDE_TAG) break; // Se não tiver mais vetor para ordenar, finalizo
 
       // Processa
-      bs(COL - 1, vetor_tarefa);
-      //qsort (vetor_tarefa, COL - 1, sizeof(int), compare);
+      // bs(COL - 1, vetor_tarefa);
+      qsort (vetor_tarefa, COL - 1, sizeof(int), compare);
       
       MPI_Send(&vetor_tarefa[0], COL, MPI_INT, 0, RESPONSE_TAG, MPI_COMM_WORLD); // Retorna o vetor ordenado para o mestre
     }
@@ -68,7 +68,7 @@ main(int argc, char** argv) {
     }
 
     double time = MPI_Wtime();
-    int linha = 0
+    int linha = 0;
     int deadProcess = 0;
 
     while(1) {
@@ -82,13 +82,12 @@ main(int argc, char** argv) {
 
         deadProcess++;
         if(deadProcess >= proc_n - 1) {
-          /*printf("===================\n");
+          /* printf("===================\n");
           for(i = 0; i < proc_n * 2; i++) {
     	      for(j = 0; j < COL - 1; j++) {
               printf("linha: %d, coluna: %d, valor: %d\n", i, j, saco_de_tarefas[i][j]);
             }
-          }*/
-          //printf("cabo em : %f", MPI_Wtime() - time);
+          } */
           printf("time: %1.2f\n", MPI_Wtime() - time);
           break;
         }
