@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define COL = 100000 + 1; // Numero de colunas + 1 é pro espaço pra enviar a linha
-#define LIN = 10; // Numero de linhas
+#define COL 100000 + 1 // Numero de colunas + 1 é pro espaço pra enviar a linha
+#define LIN 10 // Numero de linhas
 
 
 enum {
@@ -19,8 +19,8 @@ void bs(int n, int * vetor) {
     trocou = 0;
     for (d = 0 ; d < n - c - 1; d++)
       if (vetor[d] > vetor[d+1]) {
-        troca      = vetor[d];
-        vetor[d]   = vetor[d+1];
+        troca = vetor[d];
+        vetor[d] = vetor[d+1];
         vetor[d+1] = troca;
         trocou = 1;
       }
