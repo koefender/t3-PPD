@@ -3,8 +3,7 @@
 #include <stdlib.h>
 
 #define COL 100000 + 1 // Numero de colunas + 1 é pro espaço pra enviar a linha
-#define LIN 10 // Numero de linhas
-
+#define LIN 1000 // Numero de linhas
 
 enum {
   REQUEST_TAG  = 0,
@@ -32,7 +31,6 @@ int compare (const void * a, const void * b) {
   return ( *(int*)a - *(int*)b );
 }
 
-
 main(int argc, char** argv) {
   /** MPI */
   int my_rank;  // Identificador deste processo
@@ -43,9 +41,8 @@ main(int argc, char** argv) {
   MPI_Comm_rank(MPI_COMM_WORLD, &my_rank); // Pega o numero do processo atual (rank)
   MPI_Comm_size(MPI_COMM_WORLD, &proc_n); // Pega informação do numero de processos (quantidade total)
 
-  int buffer;
-  int saco_de_tarefas[LIN][COL];
-  int vetor_tarefa[COL];
+  int (*saco_de_tarefas)[COL] = malloc (LIN * sizeof * saco_de_tarefas);
+  int *vetor_tarefa = (int *)malloc(sizeof(int)*COL);
   int i, j; 
 
   if ( my_rank != 0 ) { // Sou escravo
@@ -66,9 +63,9 @@ main(int argc, char** argv) {
     // Preenche matriz
     for(i = 0; i < LIN; i++) {
     	for(j = 0; j < COL - 1; j++) 
-        saco_de_tarefas[i][j] = rand() % 10;
+        saco_de_tarefas[i][j] = COL-j;
     }
-
+    
     double time = MPI_Wtime();
     int linha = 0;
     int deadProcess = 0;
@@ -80,14 +77,16 @@ main(int argc, char** argv) {
       if (status.MPI_TAG == RESPONSE_TAG) { // Se for resposta do escravo com vetor ordenado, guarda o vetor
         for(j = 0; j < COL - 1; j++)  saco_de_tarefas[vetor_tarefa[COL-1]][j] = vetor_tarefa[j]; 
       } else if (linha >= LIN) { // Se for uma request mas acabou os vetores, manda suicide
-        MPI_Send(&buffer, 1, MPI_INT, vetor_tarefa[0], SUICIDE_TAG, MPI_COMM_WORLD);
+        MPI_Send(&vetor_tarefa[0], 1, MPI_INT, vetor_tarefa[0], SUICIDE_TAG, MPI_COMM_WORLD); // Aqui o importante é enviar a tag
 
         deadProcess++;
         if(deadProcess >= proc_n - 1) { // Se todos os processos morreram, finalizo
-          /* printf("===================\n");
+          /*printf("===================\n");
           for(i = 0; i < LIN; i++) {
+            printf("\nLinha %d: ", i);
     	      for(j = 0; j < COL - 1; j++) {
-              printf("linha: %d, coluna: %d, valor: %d\n", i, j, saco_de_tarefas[i][j]);
+              printf("%d ", saco_de_tarefas[i][j]);
+              // printf("linha: %d, coluna: %d, valor: %d\n", i, j, saco_de_tarefas[i][j]);
             }
           } */
           printf("time: %1.2f\n", MPI_Wtime() - time);
@@ -101,5 +100,7 @@ main(int argc, char** argv) {
     }
   }
   
+  free(saco_de_tarefas);
+  free(vetor_tarefa);
   MPI_Finalize();
 }
