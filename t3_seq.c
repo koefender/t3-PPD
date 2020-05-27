@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define DEBUG 1            // comentar esta linha quando for medir tempo
-#define ARRAY_SIZE 30      // trabalho final com o valores 10.000, 100.000, 1.000.000
+//#define DEBUG 1
+#define ARRAY_SIZE 1000
+#define COL        100000
 
 void bs(int n, int * vetor)
 {
@@ -28,30 +29,41 @@ int compare (const void * a, const void * b) {
   return ( *(int*)a - *(int*)b );
 }
 
+int vetor[ARRAY_SIZE][COL];
+
 int main()
 {
-    int vetor[ARRAY_SIZE];
-    int i;
+    int i,j;
     clock_t tempo;
 
     for (i=0 ; i<ARRAY_SIZE; i++)              /* init array with worst case for sorting */
-        vetor[i] = ARRAY_SIZE-i;
-   
+    {
+        for(j=0 ; j<COL; j++)
+        {
+            vetor[i][j] = COL - 1 - j;
+        }
+    }
+
     tempo = clock();
 
     #ifdef DEBUG
     printf("\nVetor: ");
     for (i=0 ; i<ARRAY_SIZE; i++)              /* print unsorted array */
-        printf("[%03d] ", vetor[i]);
+        for(j=0 ; j<COL; j++)
+            printf("[%03d] ", vetor[i][j]);
     #endif
 
-    //bs(ARRAY_SIZE, vetor);                     /* sort array */
-    qsort(vetor, ARRAY_SIZE, sizeof(int), compare);
+    for(i=0; i<ARRAY_SIZE; i++)
+    {
+        //bs(ARRAY_SIZE, vetor);                     /* sort array */
+        qsort(vetor[i], COL, sizeof(int), compare);
+    }
 
     #ifdef DEBUG
     printf("\nVetor: ");
     for (i=0 ; i<ARRAY_SIZE; i++)                              /* print sorted array */
-        printf("[%03d] ", vetor[i]);
+        for(j=0 ; j<COL; j++)
+            printf("[%03d] ", vetor[i][j]);
     printf("\n");
     #endif
 
